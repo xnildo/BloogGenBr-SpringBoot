@@ -40,18 +40,21 @@ public class PostagemController {
 	
 	@GetMapping("/titulo/{titulo}")
 	public ResponseEntity<List<Postagem>> GetTitulo(@PathVariable String titulo){
-		return ResponseEntity.ok(postagemRepository.findAllByTituloContainingIgnoreCase(titulo));
+		return ResponseEntity.ok(postagemRepository
+				.findAllByTituloContainingIgnoreCase(titulo));
 	}
 	
 	@PostMapping
-	public ResponseEntity<Postagem> post (@RequestBody Postagem postagem){
-		return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
+	public ResponseEntity<Postagem> post(@RequestBody Postagem postagem){
+		return ResponseEntity.status(HttpStatus.CREATED)
+				.body(postagemRepository.save(postagem));
 		
 	}
 	
 	@PutMapping
-	public ResponseEntity<Postagem> putt (@RequestBody Postagem postagem){
-		return ResponseEntity.status(HttpStatus.OK).body(postagemRepository.save(postagem));
+	public ResponseEntity<Postagem> putt(@RequestBody Postagem postagem){
+		return ResponseEntity.status(HttpStatus.OK)
+				.body(postagemRepository.save(postagem));
 		
 	}
 	
