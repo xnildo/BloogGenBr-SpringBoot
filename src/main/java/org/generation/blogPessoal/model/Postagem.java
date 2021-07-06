@@ -38,7 +38,19 @@ public class Postagem {
 	@JsonIgnoreProperties("postagem")//	VAI IGNORAR O ATRIBUTOS POSTAGEM 
 	private Tema tema ;
 	
+	@ManyToOne
+	@JsonIgnoreProperties ("postagem")
+	private Usuario usuario;
 	
+	
+
+	public Usuario getUsuario() {
+		return usuario;
+	}
+
+	public void setUsuario(Usuario usuario) {
+		this.usuario = usuario;
+	}
 
 	public long getId() {
 		return id;
