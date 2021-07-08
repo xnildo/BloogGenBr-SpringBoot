@@ -29,7 +29,7 @@ public class UsuarioController {
 	@Autowired
 	private UsuarioService usuarioService;
 
-	@GetMapping("/all")
+	@GetMapping("/tudo")
 	public ResponseEntity<List<Usuario>> getAll() {
 		return ResponseEntity.ok(usuarioRepository.findAll());
 	}
@@ -57,7 +57,7 @@ public class UsuarioController {
 		
 	}
 	
-	@PutMapping("/alterar")
+	@PutMapping("/editar")
 	public ResponseEntity<Usuario> putUsuario(@RequestBody Usuario usuario){
 		Optional<Usuario> updateUsuario = usuarioService.atualizarUsuario(usuario);
 		try {
@@ -66,5 +66,4 @@ public class UsuarioController {
 			return ResponseEntity.badRequest().build();
 		}
 	}
-
 }

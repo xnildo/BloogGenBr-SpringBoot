@@ -2,6 +2,7 @@ package org.generation.blogPessoal.controller;
 
 
 import java.util.List;
+import java.util.Optional;
 
 import org.generation.blogPessoal.model.Postagem;
 import org.generation.blogPessoal.repository.PostagemRepository;
@@ -17,50 +18,62 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/postagens")
 @CrossOrigin("*")
 public class PostagemController {
 	
-	@Autowired
+	@Autowired 
 	private PostagemRepository postagemRepository;
 	
-	@GetMapping
-	public ResponseEntity<List<Postagem>>GetAll(){
-		return ResponseEntity.ok(postagemRepository.findAll());
+	@GetMapping("/tudo")
+	public ResponseEntity<List<Postagem>> getAll (){
+		return ResponseEntity.ok(postagemRepository.findAll()); // OK = 200
 	}
 	
 	@GetMapping("/{id}")
-	public ResponseEntity<Postagem> GetById(@PathVariable long id){
+	public ResponseEntity<Postagem> getById(@PathVariable long id) {
 		return postagemRepository.findById(id)
-				.map(resp -> ResponseEntity.ok(resp))
-				.orElse(ResponseEntity.notFound().build());
+			.map(resp -> ResponseEntity.ok(resp))
+			.orElse(ResponseEntity.notFound().build());
 	}
 	
 	@GetMapping("/titulo/{titulo}")
-	public ResponseEntity<List<Postagem>> GetTitulo(@PathVariable String titulo){
-		return ResponseEntity.ok(postagemRepository
-				.findAllByTituloContainingIgnoreCase(titulo));
+	public ResponseEntity<List<Postagem>> getByTitulo(@PathVariable String titulo){
+		return ResponseEntity.ok(postagemRepository.findAllByTituloContainingIgnoreCase(titulo));
+	}
+
+	@PostMapping("/cadastrar")
+	public ResponseEntity<Postagem> postPostagem(@RequestBody Postagem postagem){
+		return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
 	}
 	
-	@PostMapping
-	public ResponseEntity<Postagem> post(@RequestBody Postagem postagem){
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(postagemRepository.save(postagem));
+	@PutMapping("/editar")
+	public ResponseEntity<Postagem> putPostagem(@RequestBody Postagem postagem){
+		
+		Optional<Postagem> postagemUpdate = postagemRepository.findById(postagem.getId());
+		
+		if (postagemUpdate.isPresent()) {
+			return ResponseEntity.status(HttpStatus.OK).body(postagemRepository.save(postagem));
+		}else{
+			throw new ResponseStatusException(
+		          	HttpStatus.NOT_FOUND, "Postagem não encontrada!", null);
+		}
 		
 	}
-	
-	@PutMapping
-	public ResponseEntity<Postagem> putt(@RequestBody Postagem postagem){
-		return ResponseEntity.status(HttpStatus.OK)
-				.body(postagemRepository.save(postagem));
+			
+	@DeleteMapping("/deletar/{id}")
+	public void deletePostagem(@PathVariable long id) {
 		
-	}
-	
-	@DeleteMapping("/{id}")
-	public void delete(@PathVariable long id) {
-		postagemRepository.deleteById(id);
+		Optional<Postagem> postagem = postagemRepository.findById(id);
 		
-	}
+		if (postagem.isPresent()) {
+			postagemRepository.deleteById(id);
+		}else{
+			throw new ResponseStatusException(
+		          	HttpStatus.NOT_FOUND, "Postagem não encontrada!", null);
+		}
+	}	
 }

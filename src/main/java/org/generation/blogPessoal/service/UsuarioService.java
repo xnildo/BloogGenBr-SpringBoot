@@ -20,11 +20,10 @@ public class UsuarioService {
 	private UsuarioRepository usuarioRepository;
 
 	public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
-		
-		
-		if(usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent())
+
+		if (usuarioRepository.findByUsuario(usuario.getUsuario()).isPresent())
 			return null;
-		
+
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
 		String senhaEncoder = encoder.encode(usuario.getSenha());
@@ -33,27 +32,25 @@ public class UsuarioService {
 		return Optional.of(usuarioRepository.save(usuario));
 	}
 
-	
-	public Optional<Usuario> atualizarUsuario(Usuario usuario){
-		
-		if(usuarioRepository.findById(usuario.getId()).isPresent()) {
-					
+	public Optional<Usuario> atualizarUsuario(Usuario usuario) {
+
+		if (usuarioRepository.findById(usuario.getId()).isPresent()) {
+
 			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-			
+
 			String senhaEncoder = encoder.encode(usuario.getSenha());
 			usuario.setSenha(senhaEncoder);
-			
+
 			return Optional.of(usuarioRepository.save(usuario));
-		
-		}else {
-			
-			throw new ResponseStatusException(
-					HttpStatus.NOT_FOUND, "Usuário não encontrado!", null);
-			
+
+		} else {
+
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado!", null);
+
 		}
-		
+
 	}
-	
+
 	public Optional<UsuarioLogin> logarUsuario(Optional<UsuarioLogin> usuarioLogin) {
 
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
@@ -66,10 +63,10 @@ public class UsuarioService {
 				byte[] encodedAuth = Base64.encodeBase64(auth.getBytes(Charset.forName("US-ASCII")));
 				String authHeader = "Basic " + new String(encodedAuth);
 
-				usuarioLogin.get().setToken(authHeader);				
+				usuarioLogin.get().setToken(authHeader);
 				usuarioLogin.get().setNome(usuario.get().getNome());
 				usuarioLogin.get().setSenha(usuario.get().getSenha());
-				
+
 				return usuarioLogin;
 
 			}

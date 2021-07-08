@@ -9,7 +9,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -29,6 +29,7 @@ public class Usuario {
 
 	@NotNull
 	@Size(min = 2, max = 100)
+	@Email
 	private String usuario;
 
 	@NotNull
@@ -78,5 +79,4 @@ public class Usuario {
 	public void setPostagem(List<Postagem> postagem) {
 		this.postagem = postagem;
 	}
-
 }

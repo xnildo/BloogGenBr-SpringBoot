@@ -13,19 +13,19 @@ import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Entity //SERA UMA ENTIDADE DO JPA
-@Table(name = "tb_tema") //CRIAÇÃO DA TABELA TEMA
+@Entity // SERA UMA ENTIDADE DO JPA
+@Table(name = "tb_temas") // CRIAÇÃO DA TABELA TEMA
 public class Tema {
-	
-	@Id // ID
-	@GeneratedValue(strategy = GenerationType.IDENTITY) //AUTO-INCREMENTO
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-	
-	@NotNull
+
+	@NotNull(message = "O atributo Descrição deve ser obrigatório")
 	private String descricao;
-	
+
 	@OneToMany(mappedBy = "tema", cascade = CascadeType.ALL)
-	@JsonIgnoreProperties("tema")//	VAI IGNORAR O ATRIBUTOS POSTAGEM
+	@JsonIgnoreProperties("tema")
 	private List<Postagem> postagem;
 
 	public long getId() {
