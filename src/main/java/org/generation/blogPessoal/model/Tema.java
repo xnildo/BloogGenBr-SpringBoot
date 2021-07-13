@@ -9,25 +9,29 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
-@Entity // SERA UMA ENTIDADE DO JPA
-@Table(name = "tb_temas") // CRIAÇÃO DA TABELA TEMA
-public class Tema {
-
-	@Id
+@Entity
+@Table(name = "tb_temas")
+public class Tema{
+    
+    @Id	
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
-
-	@NotNull(message = "O atributo Descrição deve ser obrigatório")
+	
+	@NotNull(message = "Atributo obrigatório")
 	private String descricao;
-
+	
 	@OneToMany(mappedBy = "tema", cascade = CascadeType.ALL)
 	@JsonIgnoreProperties("tema")
 	private List<Postagem> postagem;
-
+	
+	@Transient
+	private int qtdTema; // Atributo Trendtopics
+	
 	public long getId() {
 		return id;
 	}
@@ -43,7 +47,7 @@ public class Tema {
 	public void setDescricao(String descricao) {
 		this.descricao = descricao;
 	}
-
+	
 	public List<Postagem> getPostagem() {
 		return postagem;
 	}
@@ -52,4 +56,13 @@ public class Tema {
 		this.postagem = postagem;
 	}
 
+	public int getQtdTema() {
+		return qtdTema;
+	}
+
+	public void setQtdTema(int qtdTema) {
+		this.qtdTema = qtdTema;
+	}
+	
+	
 }

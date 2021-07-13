@@ -2,10 +2,10 @@ package org.generation.blogPessoal.controller;
 
 
 import java.util.List;
-import java.util.Optional;
 
 import org.generation.blogPessoal.model.Postagem;
 import org.generation.blogPessoal.repository.PostagemRepository;
+import org.generation.blogPessoal.service.PostagemService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,23 +18,25 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/postagens")
-@CrossOrigin("*")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class PostagemController {
-	
-	@Autowired 
+
+	@Autowired
 	private PostagemRepository postagemRepository;
 	
-	@GetMapping("/tudo")
-	public ResponseEntity<List<Postagem>> getAll (){
-		return ResponseEntity.ok(postagemRepository.findAll()); // OK = 200
+	@Autowired
+	private PostagemService postagemService;
+
+	@GetMapping
+	public ResponseEntity<List<Postagem>> GetAll() {
+		return ResponseEntity.ok(postagemRepository.findAll());
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<Postagem> getById(@PathVariable long id) {
+	public ResponseEntity<Postagem> GetById(@PathVariable long id) {
 		return postagemRepository.findById(id)
 			.map(resp -> ResponseEntity.ok(resp))
 			.orElse(ResponseEntity.notFound().build());
@@ -45,35 +47,46 @@ public class PostagemController {
 		return ResponseEntity.ok(postagemRepository.findAllByTituloContainingIgnoreCase(titulo));
 	}
 
-	@PostMapping("/cadastrar")
-	public ResponseEntity<Postagem> postPostagem(@RequestBody Postagem postagem){
+	@PostMapping
+	public ResponseEntity<Postagem> postPostagem (@RequestBody Postagem postagem){
 		return ResponseEntity.status(HttpStatus.CREATED).body(postagemRepository.save(postagem));
 	}
 	
-	@PutMapping("/editar")
-	public ResponseEntity<Postagem> putPostagem(@RequestBody Postagem postagem){
-		
-		Optional<Postagem> postagemUpdate = postagemRepository.findById(postagem.getId());
-		
-		if (postagemUpdate.isPresent()) {
-			return ResponseEntity.status(HttpStatus.OK).body(postagemRepository.save(postagem));
-		}else{
-			throw new ResponseStatusException(
-		          	HttpStatus.NOT_FOUND, "Postagem não encontrada!", null);
-		}
-		
+	@PutMapping
+	public ResponseEntity<Postagem> putPostagem (@RequestBody Postagem postagem){
+		return ResponseEntity.status(HttpStatus.OK).body(postagemRepository.save(postagem));
 	}
 			
-	@DeleteMapping("/deletar/{id}")
+	@DeleteMapping("/{id}")
 	public void deletePostagem(@PathVariable long id) {
-		
-		Optional<Postagem> postagem = postagemRepository.findById(id);
-		
-		if (postagem.isPresent()) {
-			postagemRepository.deleteById(id);
-		}else{
-			throw new ResponseStatusException(
-		          	HttpStatus.NOT_FOUND, "Postagem não encontrada!", null);
-		}
+		postagemRepository.deleteById(id);
+
 	}	
+	
+	/**
+	 * 
+	 * Curtir postagem
+	 * 
+	 */
+
+	@PutMapping("/curtir/{id}")
+	public ResponseEntity<Postagem> putCurtirPostagemId (@PathVariable Long id){
+		
+		return ResponseEntity.status(HttpStatus.OK).body(postagemService.curtir(id));
+	
+	}
+	
+	/**
+	 * 
+	 * Descurtir postagem
+	 * 
+	 */
+
+	@PutMapping("/descurtir/{id}")
+	public ResponseEntity<Postagem> putDescurtirPostagemId (@PathVariable Long id){
+		
+		return ResponseEntity.status(HttpStatus.OK).body(postagemService.descurtir(id));
+	
+	}
+	
 }

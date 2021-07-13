@@ -1,10 +1,10 @@
 package org.generation.blogPessoal.controller;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.generation.blogPessoal.model.Tema;
 import org.generation.blogPessoal.repository.TemaRepository;
+import org.generation.blogPessoal.service.TemaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,17 +17,20 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
-@RestController //É UM CONTROLLER
-@CrossOrigin(origins ="*", allowedHeaders = "*")
+
+@RestController
 @RequestMapping("/temas")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class TemaController {
-	
-	@Autowired
+    
+    @Autowired
 	private TemaRepository temaRepository;
 
-	@GetMapping("/tudo")
+    @Autowired
+   	private TemaService temaService;
+
+	@GetMapping
 	public ResponseEntity<List<Tema>> getAll() {
 		return ResponseEntity.ok(temaRepository.findAll());
 	
@@ -41,42 +44,37 @@ public class TemaController {
 	}
 	
 	@GetMapping("/descricao/{descricao}")
-	public ResponseEntity<List<Tema>> getByDescricao(@PathVariable String descricao) {
+	public ResponseEntity<List<Tema>> GetByDescricao(@PathVariable String descricao) {
 		return ResponseEntity.ok(temaRepository.findAllByDescricaoContainingIgnoreCase(descricao));
 	}
 	
 	@PostMapping("/cadastrar")
-	public ResponseEntity<Tema> postTema(@RequestBody Tema tema){
+	public ResponseEntity<Tema> post (@RequestBody Tema tema){
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(temaRepository.save(tema));
 	}
 
 	@PutMapping("/editar")
-	public ResponseEntity<Tema> putTema(@RequestBody Tema tema){
-		
-		Optional<Tema> temaUpdate = temaRepository.findById(tema.getId());
-		
-		if (temaUpdate.isPresent()) {
-			return ResponseEntity.status(HttpStatus.OK).body(temaRepository.save(tema));
-		}else{
-			throw new ResponseStatusException(
-		          	HttpStatus.NOT_FOUND, "Tema não encontrado!", null);
-		}
-			
+	public ResponseEntity<Tema> put (@RequestBody Tema tema){
+		return ResponseEntity.ok(temaRepository.save(tema));				
 	}
 	
 	@DeleteMapping("/deletar/{id}")
-	public void deleteTema(@PathVariable long id) {
-
-		Optional<Tema> tema = temaRepository.findById(id);
-		
-		if (tema.isPresent()) {
-			temaRepository.deleteById(id);
-		}else{
-			throw new ResponseStatusException(
-		          	HttpStatus.NOT_FOUND, "Tema não encontrado!", null);
-		}
+	public void delete(@PathVariable long id) {
+		temaRepository.deleteById(id);
 	}
+
+	/**
+	 * 
+	 * Calcula o numero de postagens por tema
+	 * 
+	 */
 	
+	@GetMapping("/trendtopics")
+	public ResponseEntity<List<Tema>> getTrendTopics() {
+		
+		return ResponseEntity.ok(temaService.trendTopics());
+	
+	}
 	
 }
